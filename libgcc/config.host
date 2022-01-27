@@ -1241,6 +1241,9 @@ sh-*-elf* | sh[12346l]*-*-elf*)
  		;;
  	esac
 	;;
+sh-*-dreamcast*)
+    use_fixproto=yes
+	;;
 sh-*-linux* | sh[2346lbe]*-*-linux*)
 	tmake_file="${tmake_file} sh/t-sh t-slibgcc-libgcc sh/t-linux t-fdpbit"
 	md_unwind_header=sh/linux-unwind.h

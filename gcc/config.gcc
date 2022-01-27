@@ -2888,6 +2888,10 @@ sh-*-elf* | sh[12346l]*-*-elf* | \
 			extra_options="${extra_options} netbsd.opt netbsd-elf.opt"
 
 			;;
+	sh-dreamcast-elf)
+			tm_file="${tm_file} sh/dreamcast.h"
+
+			;;
 	sh*-superh-elf)	if test x$with_libgloss != xno; then
                                 with_libgloss=yes
                                 tm_file="${tm_file} sh/newlib.h"

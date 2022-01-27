@@ -305,6 +305,10 @@ case $1 in
 				basic_machine=i586-pc
 				os=msdosdjgpp
 				;;
+			dreamcast)
+				basic_machine=sh-dreamcast
+				os=elf
+				;;
 			ebmon29k)
 				basic_machine=a29k-amd
 				os=ebmon
@@ -644,6 +648,10 @@ esac
 case $basic_machine in
 	# Here we handle the default manufacturer of certain CPU types.  It is in
 	# some cases the only manufacturer, in others, it is the most popular.
+	sh-dreamcast)
+		cpu=sh
+		vendor=dreamcast
+		;;
 	w89k)
 		cpu=hppa1.1
 		vendor=winbond
