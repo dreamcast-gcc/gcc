@@ -327,6 +327,10 @@ esac
 # Set any OS-dependent and CPU-dependent bits.
 # THIS TABLE IS SORTED.  KEEP IT THAT WAY.
 case "${host}" in
+  sh*-dreamcast-*)
+    CPPFLAGS="${CPPFLAGS} -DBUILD_LIBSTDCXX_HACK"
+    CXXFLAGS="${CXXFLAGS} -DBUILD_LIBSTDCXX_HACK"
+  ;;
   *-*-linux*)
     case "${host_cpu}" in
       i[567]86)

@@ -34,13 +34,81 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
 #define __GTHREADS_CXX0X 1
 #define __GTHREAD_HAS_COND 1
 
-#include <kos/thread.h>
-#include <kos/tls.h>
-#include <kos/mutex.h>
-#include <kos/once.h>
-#include <kos/cond.h>
-#include <arch/irq.h>
 #include <time.h>
+
+#if !defined(IN_LIBGCC2) && !defined(BUILD_LIBSTDCXX_HACK)
+  #include <kos/thread.h>
+  #include <kos/tls.h>
+  #include <kos/mutex.h>
+  #include <kos/once.h>
+  #include <kos/cond.h>
+  #include <arch/irq.h>
+#else
+/* KallistiOS ##version##
+   include/kos/once.h
+   Copyright (C) 2009, 2010 Lawrence Sebald
+   include/kos/cond.h
+   Copyright (C)2001,2003 Dan Potter
+   include/kos/mutex.h
+   Copyright (C) 2001, 2003 Dan Potter
+   Copyright (C) 2012, 2015 Lawrence Sebald
+*/
+/* forward declarations */
+#define MUTEX_TYPE_NORMAL       1
+#define MUTEX_TYPE_RECURSIVE    3
+#define MUTEX_INITIALIZER               { MUTEX_TYPE_NORMAL, 0, NULL, 0 }
+#define RECURSIVE_MUTEX_INITIALIZER     { MUTEX_TYPE_RECURSIVE, 0, NULL, 0 }
+
+typedef struct kthread_t kthread_t;
+extern kthread_t *thd_create(int detach, void * (*routine)(void *param), void *param);
+extern int thd_join(kthread_t * thd, void **value_ptr);
+extern int thd_detach(kthread_t *thd);
+extern kthread_t *thd_get_current(void);
+extern void thd_pass(void);
+extern void thd_exit(void *rv);
+
+typedef int kthread_key_t;
+extern int kthread_key_create(kthread_key_t *key, void (*destructor)(void *));
+extern int kthread_key_delete(kthread_key_t key);
+extern void *kthread_getspecific(kthread_key_t key);
+extern int kthread_setspecific(kthread_key_t key, const void *value);
+
+typedef struct condvar {
+    int initialized;
+    int dynamic;
+} condvar_t;
+
+typedef struct kos_mutex {
+    int type;
+    int dynamic;
+    kthread_t *holder;
+    int count;
+} mutex_t;
+extern int cond_init(condvar_t *cv);
+extern int cond_destroy(condvar_t *cv);
+extern int cond_wait(condvar_t *cv, mutex_t * m);
+extern int cond_wait_timed(condvar_t *cv, mutex_t * m, int timeout);
+extern int cond_signal(condvar_t *cv);
+extern int cond_broadcast(condvar_t *cv);
+
+extern int mutex_init(mutex_t *m, int mtype);
+extern int mutex_destroy(mutex_t *m);
+extern int mutex_lock(mutex_t *m);
+extern int mutex_lock_timed(mutex_t *m, int timeout);
+extern int mutex_is_locked(mutex_t *m);
+extern int mutex_trylock(mutex_t *m);
+extern int mutex_unlock(mutex_t *m);
+
+typedef struct {
+    int initialized;
+    int run;
+} kthread_once_t;
+
+extern int kthread_once(kthread_once_t *once_control, void (*init_routine)(void));
+
+extern int irq_disable(void);
+extern void irq_restore(int v);
+#endif
 
 /* These should work just fine. */
 typedef kthread_key_t __gthread_key_t;
@@ -51,10 +119,10 @@ typedef condvar_t __gthread_cond_t;
 typedef kthread_t *__gthread_t;
 typedef struct timespec __gthread_time_t;
 
-#define __GTHREAD_ONCE_INIT KTHREAD_ONCE_INIT
+#define __GTHREAD_ONCE_INIT {1,0}
 #define __GTHREAD_MUTEX_INIT MUTEX_INITIALIZER
 #define __GTHREAD_RECURSIVE_MUTEX_INIT RECURSIVE_MUTEX_INITIALIZER
-#define __GTHREAD_COND_INIT COND_INITIALIZER
+#define __GTHREAD_COND_INIT {1,0}
 #define __GTHREAD_TIME_INIT {0,0}
 
 #define __GTHREAD_MUTEX_INIT_FUNCTION __gthread_mutex_init_func
