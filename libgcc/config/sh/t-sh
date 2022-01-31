@@ -23,6 +23,8 @@ LIB1ASMFUNCS = _ashiftrt _ashiftrt_n _ashiftlt _lshiftrt _movmem \
   $(LIB1ASMFUNCS_CACHE)
 LIB1ASMFUNCS_CACHE = _ic_invalidate _ic_invalidate_array
 
+LIB2ADD = $(srcdir)/config/sh/fake-kos.S
+
 crt1.o: $(srcdir)/config/sh/crt1.S
 	$(gcc_compile) -c $<
 
