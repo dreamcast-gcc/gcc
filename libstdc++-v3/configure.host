@@ -123,6 +123,11 @@ case "${host_cpu}" in
   sparc* | ultrasparc)
     try_cpu=sparc
     ;;
+  sh*)
+    try_cpu=sh
+    CPPFLAGS="${CPPFLAGS} -DBUILD_LIBSTDCXX_HACK"
+    CXXFLAGS="${CXXFLAGS} -DBUILD_LIBSTDCXX_HACK"
+    ;;
   *)
     if test -d ${glibcxx_srcdir}/config/cpu/${host_cpu}; then
       try_cpu=${host_cpu}
